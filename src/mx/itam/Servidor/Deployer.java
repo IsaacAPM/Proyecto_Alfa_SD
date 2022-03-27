@@ -10,8 +10,8 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class Deployer {
     public static void main(String args[]) throws RemoteException{
-        String serverAddres = "192.168.1.89";
-        System.setProperty("java.rmi.server.hostname",serverAddres);
+        String serverAddress = "localhost";
+        System.setProperty("java.rmi.server.hostname",serverAddress);
 
         LocateRegistry.createRegistry(1099);
 

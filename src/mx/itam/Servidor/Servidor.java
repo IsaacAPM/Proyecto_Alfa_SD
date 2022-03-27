@@ -2,10 +2,6 @@ package mx.itam.Servidor;
 
 import mx.itam.Clases.Jugador;
 import mx.itam.Interfaces.Registro;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.*;
 import java.rmi.RemoteException;
@@ -13,6 +9,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Servidor implements Registro {
     private static ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
@@ -41,8 +38,34 @@ public class Servidor implements Registro {
             Registry registry = LocateRegistry.getRegistry();
             registry.rebind(name, stub);
             System.out.println("Servicio de registro desplegado\n");
+
+            String currentDate = (new Date()).toString();
+            String mensaje = currentDate + ";0;Este es un mensaje de prueba";
+
+            enviaMensajeUDP(mensaje);
         } catch (RemoteException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void enviaMensajeUDP(String mensaje){
+        MulticastSocket socket = null;
+        try {
+            while(true){
+                InetAddress group = InetAddress.getByName("228.5.6.7"); // destination multicast group
+                socket = new MulticastSocket(49159);
+                socket.joinGroup(group);
+
+                byte[] m = mensaje.getBytes();
+                DatagramPacket messageOut =
+                        new DatagramPacket(m, m.length, group, 49159);
+                socket.send(messageOut);
+                Thread.sleep(2000);
+            }
+        } catch (InterruptedException | IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (socket != null) socket.close();
         }
     }
 
@@ -69,6 +92,4 @@ public class Servidor implements Registro {
         }
         return sb.toString();
     }
-
-
 }
