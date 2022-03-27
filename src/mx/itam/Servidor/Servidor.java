@@ -15,6 +15,8 @@ public class Servidor implements Registro {
     private static ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
     private static int playersCounter = 0;
     private static int N;
+    private static MulticastSocket socket = null;
+    private static InetAddress group;
 
     public Servidor() throws RemoteException{
         super();
@@ -42,26 +44,33 @@ public class Servidor implements Registro {
             String currentDate = (new Date()).toString();
             String mensaje = currentDate + ";0;Este es un mensaje de prueba";
 
-            enviaMensajeUDP(mensaje);
-        } catch (RemoteException e) {
+            this.group = InetAddress.getByName("228.5.6.7"); // destination multicast group
+            this.socket = new MulticastSocket(49159);
+            this.socket.joinGroup(this.group);
+
+            loopJuego();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void enviaMensajeUDP(String mensaje){
-        MulticastSocket socket = null;
-        try {
-            while(true){
-                InetAddress group = InetAddress.getByName("228.5.6.7"); // destination multicast group
-                socket = new MulticastSocket(49159);
-                socket.joinGroup(group);
+    public boolean loopJuego(){
+        boolean finJuego = false;
+        while(!finJuego){
+            int posMonstruo = 0;
+            String mensaje = posMonstruo + ";";
+            enviaMensajeUDP(mensaje);
+        }
+        return finJuego;
+    }
 
-                byte[] m = mensaje.getBytes();
-                DatagramPacket messageOut =
-                        new DatagramPacket(m, m.length, group, 49159);
-                socket.send(messageOut);
-                Thread.sleep(2000);
-            }
+    public void enviaMensajeUDP(String mensaje){
+        try {
+            byte[] m = mensaje.getBytes();
+            DatagramPacket messageOut =
+                    new DatagramPacket(m, m.length, this.group, 49159);
+            this.socket.send(messageOut);
+            Thread.sleep(2000);
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         } finally {
