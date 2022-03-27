@@ -19,5 +19,8 @@ public class Deployer {
         int N = 10;
         Servidor servidor = new Servidor(N);
         servidor.deploy(name);
+        System.out.println("Hola");
+
+
     }
 }

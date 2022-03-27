@@ -2,7 +2,7 @@ package mx.itam.Clases;
 
 public class Jugador implements Comparable<Jugador>{
     private String id; //identificador del jugador
-    private int winCount; //contador de victoria
+    private int winCount; //contador de victorias
     private int N; //victorias para ganar
 
     public Jugador(String  id, int N){

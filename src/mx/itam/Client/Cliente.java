@@ -25,7 +25,7 @@ public class Cliente {
         try {
             Registry registry = LocateRegistry.getRegistry("192.168.1.89");
             Registro comp = (Registro) registry.lookup(name);
-            String nombreJugador = "Diego";
+            String nombreJugador = "Rodrigo";
             String datosRegistro = comp.registro(nombreJugador);
             System.out.println(datosRegistro);
 
