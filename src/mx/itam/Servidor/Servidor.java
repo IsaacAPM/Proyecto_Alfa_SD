@@ -57,7 +57,7 @@ public class Servidor implements Registro {
             this.listenSocket = new ServerSocket(49200);
 
             while (this.jugadores.size() == 0) {
-                wait();
+                Thread.sleep(1000);
             }
             loopJuego();
 
