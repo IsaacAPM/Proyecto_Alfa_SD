@@ -67,8 +67,9 @@ public class Servidor implements Registro {
         }
     }
 
-    public void loopJuego(){
+    public void loopJuego() throws InterruptedException {
         while(band){
+            Thread.sleep(1000);
             int posMonstruo = 0;
             posMonstruo = randomNumber(9,1);
             String mensaje = posMonstruo + ";null";
