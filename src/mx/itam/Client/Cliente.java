@@ -31,14 +31,12 @@ public class Cliente {
             Registro comp = (Registro) registry.lookup(name);
             String nombreJugador = "Rodrigo";
             String[] datosRegistro = comp.registro(nombreJugador).split(";");
+
             String IP = datosRegistro[0];
             int portTCP = Integer.parseInt(datosRegistro[1]);
             int portUDP = Integer.parseInt(datosRegistro[2]);
             String inetA = datosRegistro[3];
-
-            //Se agrega el jugador al Socket para comunicación TCP y se crea el Tablero
-            socketTCP = new Socket(IP, portTCP);
-            Tablero tab = new Tablero(nombreJugador, socketTCP);
+            System.out.println(portUDP);
 
             //Se registra el jugador en el sevidor Multicast UDP
             InetAddress group = InetAddress.getByName(inetA); // destination multicast group
@@ -52,8 +50,12 @@ public class Cliente {
             String[] mensaje = new String(messageIn.getData()).trim().split(";");
             int posMonstruo = Integer.parseInt(mensaje[0]);
             String nomGanador = mensaje[1];
-            System.out.println(posMonstruo);
 
+            //Se agrega el jugador al Socket para comunicación TCP y se crea el Tablero
+            socketTCP = new Socket(IP, portTCP);
+            Tablero tab = new Tablero(nombreJugador, socketTCP);
+
+            //Se muestra el monstruo o el mensaje del ganador en el juego
             if (nomGanador.equals(nombreJugador)){
                 tab.muestra(posMonstruo,true);
             }else{
@@ -66,7 +68,7 @@ public class Cliente {
             System.out.println("Socket: " + e.getMessage());
         } catch (IOException e) {
             System.out.println("IO: " + e.getMessage());
-        }finally {
+        } finally {
             if (socketUDP != null) socketUDP.close();
         }
     }

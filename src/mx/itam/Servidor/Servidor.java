@@ -20,11 +20,17 @@ public class Servidor implements Registro {
     public static ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
     private static int playersCounter = 0;
     public static int N;
-    public static boolean termino = false;
-    private static MulticastSocket socket = null;
+    public static boolean encuentraGanador = false;
+    public static boolean recibeTCP = false;
     private static ServerSocket listenSocket = null;
-    private static InetAddress group;
-    public static Jugador ganador;
+    private static MulticastSocket socketUDP = null;
+    private static Socket clientSocket = null;
+    private static InetAddress group = null;
+    public static String nomGanador;
+    private static String IP = "localhost";
+    private static int portTCP = 49200;
+    private static int portUDP = 49159;
+    private static String inetA = "228.5.6.7";
 
     public Servidor() throws RemoteException{
         super();
@@ -33,7 +39,6 @@ public class Servidor implements Registro {
     public Servidor(int N){
         super();
         this.N = N;
-        ganador = new Jugador();
     }
 
     public void deploy(String name){
@@ -50,63 +55,58 @@ public class Servidor implements Registro {
             registry.rebind(name, stub);
             System.out.println("Servicio de registro desplegado\n");
 
-            this.group = InetAddress.getByName("228.5.6.7"); // destination multicast group
-            this.socket = new MulticastSocket(49159);
-            this.socket.joinGroup(this.group);
+            //Se genera el servidor Multicast UDP
+            this.group = InetAddress.getByName(this.inetA); // destination multicast group
+            this.socketUDP = new MulticastSocket(this.portUDP);
+            this.socketUDP.joinGroup(this.group);
 
-            this.listenSocket = new ServerSocket(49200);
-
-            while (this.jugadores.size() == 0) {
+            //Espera a que haya al menos un jugador
+            System.out.println("Esperando jugadores");
+            while (jugadores.size()==0){
                 Thread.sleep(1000);
             }
-            loopJuego();
 
-            if (socket != null) socket.close();
+            System.out.println("Jugador encontrado");
+
+            Thread.sleep(10000);
+
+            System.out.println("Arranca el juego");
+            //Arranca el juego
+            while(true) {
+                loopJuego();
+            }
+
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    public void loopJuego() throws InterruptedException {
-        while(!termino){
-            Thread.sleep(1000);
-            int posMonstruo = 0;
-            posMonstruo = randomNumber(9,1);
-            String mensaje = posMonstruo + ";null";
-            System.out.println(mensaje);
-            enviaMensajeUDP(mensaje);
-
-            try {
-                System.out.println("Waiting for messages...");
-                Socket clientSocket = this.listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
-                Connection c = new Connection(clientSocket);
-                c.start();
-            } catch (IOException e) {
-                System.out.println("Listen :" + e.getMessage());
+    public void loopJuego() throws InterruptedException, IOException {
+        while (!encuentraGanador){
+            int posMonstruo = randomNumber(9,1);
+            enviaMensajeUDP(posMonstruo + ";null");
+            while (!recibeTCP){
+                try {
+                    ServerSocket listenSocket = new ServerSocket(this.portTCP);
+                    while (true) {
+                        clientSocket = listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
+                        Connection c = new Connection(clientSocket);
+                        c.start();
+                    }
+                } catch (IOException e) {
+                    System.out.println("Listen :" + e.getMessage());
+                }
             }
         }
-        enviaMensajeUDP("0;" + ganador.getId());
-    }
-
-    public void enviaMensajeUDP(String mensaje){
-        try {
-            byte[] m = mensaje.getBytes();
-            DatagramPacket messageOut =
-                    new DatagramPacket(m, m.length, this.group, 49159);
-            this.socket.send(messageOut);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        enviaMensajeUDP("0;" + this.nomGanador);
+        encuentraGanador = false;
+        Thread.sleep(10000);
     }
 
     @Override
     public String registro(String id) throws RemoteException{
         this.playersCounter++;
-        String IP = "localhost";
-        int portTCP = 49200;
-        int portUDP = 49159;
-        String inetA = "228.5.6.7";
-        String resp = IP + ";" + portTCP + ";" + portUDP + ";" + inetA;
+        String resp = this.IP + ";" + this.portTCP + ";" + this.portUDP + ";" + this.inetA;
         Jugador aux = new Jugador(id,N);
 
         if(!jugadores.contains(aux)){
@@ -122,6 +122,14 @@ public class Servidor implements Registro {
 
         int value = random.nextInt(max - min) + min;
         return  value;
+    }
+
+    private void enviaMensajeUDP(String mensaje) throws IOException {
+        System.out.println(mensaje);
+        byte[] m = mensaje.getBytes();
+        DatagramPacket messageOut =
+                new DatagramPacket(m, m.length, this.group, this.portUDP);
+        this.socketUDP.send(messageOut);
     }
 
     public String toString(){
@@ -149,31 +157,26 @@ class Connection extends Thread {
     @Override
     public void run() {
         try {
-            // an echo server
             int length = in.readInt();
             byte[] array = new byte[length];
             in.readFully(array);
             String nombreUsuario = new String(array);
             System.out.println(nombreUsuario);
             int i = 0;
-            boolean band = false;
+            boolean encuentraJugador = false;
 
-            while(i<Servidor.jugadores.size() && !band){
-                band = Servidor.jugadores.get(i).getId().equals(nombreUsuario);
-                System.out.println(band);
+            while(i<Servidor.jugadores.size() && !encuentraJugador){
+                encuentraJugador = Servidor.jugadores.get(i).getId().equals(nombreUsuario);
                 i++;
             }
 
-            if(band){
-                Servidor.termino = Servidor.jugadores.get(i-1).incWinCount();
-                if(Servidor.termino){
-                    Servidor.ganador = Servidor.jugadores.get(i-1);
-                }
+            if(encuentraJugador){
+                Servidor.encuentraGanador = Servidor.jugadores.get(i-1).incWinCount();
+                Servidor.nomGanador = Servidor.jugadores.get(i-1).getId();
+                Servidor.recibeTCP = true;
             }
-        } catch (EOFException e) {
-            System.out.println("EOF:" + e.getMessage());
-        } catch (IOException e) {
-            System.out.println("IO:" + e.getMessage());
+        } catch (IOException ex) {
+            ex.printStackTrace();
         } finally {
             try {
                 clientSocket.close();
