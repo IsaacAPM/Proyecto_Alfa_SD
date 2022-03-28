@@ -26,24 +26,29 @@ public class Cliente {
             System.setSecurityManager(new SecurityManager());
         }*/
 
-        MulticastSocket socket = null;
+        MulticastSocket socketUDP = null;
+        Socket socketTCP = null;
         String name = "Registro";
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost");
+            Registry registry = LocateRegistry.getRegistry("192.168.1.89");
             Registro comp = (Registro) registry.lookup(name);
             String nombreJugador = "Rodrigo";
-            String datosRegistro = comp.registro(nombreJugador);
+            String[] datosRegistro = comp.registro(nombreJugador).split(";");
+            String IP = datosRegistro[0];
+            int portTCP = Integer.parseInt(datosRegistro[1]);
+            int portUDP = Integer.parseInt(datosRegistro[2]);
 
-            Tablero tab = new Tablero(nombreJugador);
+            //Se agrega el jugador al Socket para comunicación TCP y se crea el Tablero
+            socketTCP = new Socket(IP, portTCP);
+            Tablero tab = new Tablero(nombreJugador, socketTCP);
 
             //Se registra el jugador en el sevidor Multicast UDP
-            InetAddress group = InetAddress.getByName("228.5.6.7"); // destination multicast group
-            socket = new MulticastSocket(49159);
-            socket.joinGroup(group);
+            InetAddress group = InetAddress.getByName(IP); // destination multicast group
+            socketUDP = new MulticastSocket(portUDP);
+            socketUDP.joinGroup(group);
             byte[] buffer = new byte[1000];
-            System.out.println("Waiting for messages...");
             DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
-            socket.receive(messageIn);
+            socketUDP.receive(messageIn);
 
             String[] mensaje = new String(messageIn.getData()).trim().split(";");
             int posMonstruo = Integer.parseInt(mensaje[0]);
@@ -56,18 +61,21 @@ public class Cliente {
             }
 
             //El jugador se sale del servidor Multicast UDP
-            socket.leaveGroup(group);
+            socketUDP.leaveGroup(group);
 
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (NotBoundException e) {
+        } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         } catch (SocketException e) {
             System.out.println("Socket: " + e.getMessage());
         } catch (IOException e) {
             System.out.println("IO: " + e.getMessage());
         } finally {
-            if (socket != null) socket.close();
+            if (socketUDP != null) socketUDP.close();
+            if (socketTCP != null) try {
+                socketTCP.close();
+            } catch (IOException e) {
+                System.out.println("close:" + e.getMessage());
+            }
         }
     }
 }

@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 
 public class Tablero extends JFrame{
+    private Socket socket = null;
     private JPanel panel1;
     private JButton button1;
     private JButton button2;
@@ -90,7 +91,8 @@ public class Tablero extends JFrame{
         tiempo.start();
     }
 
-    public Tablero(String nombreJugador) {
+    public Tablero(String nombreJugador, Socket socket) {
+        this.socket = socket;
         this.setContentPane(this.panel1);
         this.setTitle("Tablero");
         this.setSize(700,800);
@@ -208,11 +210,8 @@ public class Tablero extends JFrame{
     }
 
     public void mensajeTCP(String mensaje) throws RemoteException {
-        Socket socket = null;
         try {
-            int serverPort = 49152;
-            socket = new Socket("localhost", serverPort);
-            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            DataOutputStream out = new DataOutputStream(this.socket.getOutputStream());
 
             byte[] data = mensaje.getBytes();
             out.writeInt(data.length);
@@ -224,12 +223,6 @@ public class Tablero extends JFrame{
             System.out.println("EOF:" + e.getMessage());
         } catch (IOException e) {
             System.out.println("IO: -" + e.getMessage());
-        } finally {
-            if (socket != null) try {
-                socket.close();
-            } catch (IOException e) {
-                System.out.println("close:" + e.getMessage());
-            }
         }
     }
 
