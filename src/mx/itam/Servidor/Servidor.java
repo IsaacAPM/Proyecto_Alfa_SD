@@ -54,6 +54,8 @@ public class Servidor implements Registro {
             this.socket = new MulticastSocket(49159);
             this.socket.joinGroup(this.group);
 
+            this.listenSocket = new ServerSocket(49200);
+
             while (this.jugadores.size() == 0) {
                 Thread.sleep(1000);
             }
@@ -65,10 +67,8 @@ public class Servidor implements Registro {
         }
     }
 
-    public void loopJuego() throws InterruptedException, IOException {
+    public void loopJuego() throws InterruptedException {
         while(band){
-            this.listenSocket = new ServerSocket(49200);
-
             Thread.sleep(1000);
             int posMonstruo = 0;
             posMonstruo = randomNumber(9,1);
