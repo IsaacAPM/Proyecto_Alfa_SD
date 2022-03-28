@@ -1,7 +1,9 @@
 package mx.itam.Client;
 
 import mx.itam.Interfaces.Registro;
+import mx.itam.Tablero.Tablero;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.net.*;
 import java.rmi.NotBoundException;
@@ -23,6 +25,10 @@ public class Cliente {
         /*if(System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
         }*/
+
+        Tablero tab = new Tablero();
+        tab.muestra();
+
         MulticastSocket socket = null;
         String name = "Registro";
         try {
@@ -40,7 +46,8 @@ public class Cliente {
             System.out.println("Waiting for messages...");
             DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
             socket.receive(messageIn);
-            System.out.println("Message: " + new String(messageIn.getData()).trim() + " from: " + messageIn.getAddress());
+            System.out.println(new String(messageIn.getData()).trim());
+
             //El jugador se sale del servidor Multicast UDP
             socket.leaveGroup(group);
 

@@ -50,6 +50,8 @@ public class Servidor implements Registro {
             this.socket.joinGroup(this.group);
 
             loopJuego();
+
+            if (socket != null) socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,11 +71,8 @@ public class Servidor implements Registro {
             DatagramPacket messageOut =
                     new DatagramPacket(m, m.length, this.group, 49159);
             this.socket.send(messageOut);
-            Thread.sleep(2000);
-        } catch (InterruptedException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (socket != null) socket.close();
         }
     }
 

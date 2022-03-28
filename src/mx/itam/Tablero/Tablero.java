@@ -88,7 +88,11 @@ public class Tablero extends JFrame{
     }
 
     public Tablero() {
-
+        this.setContentPane(this.panel1);
+        this.setTitle("Tablero");
+        this.setSize(700,800);
+        this.setVisible(true);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         button1.addActionListener(new ActionListener() {
             @Override
@@ -212,15 +216,4 @@ public class Tablero extends JFrame{
     private void createUIComponents() {
         // TODO: place custom component creation code here
     }
-
-    public static void main(String[] args) {
-        Tablero tab = new Tablero();
-        tab.setContentPane(tab.panel1);
-        tab.setTitle("Tablero");
-        tab.setSize(700,800);
-        tab.setVisible(true);
-        tab.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        tab.muestra();
-    }
-
 }
