@@ -26,8 +26,6 @@ public class Cliente {
             System.setSecurityManager(new SecurityManager());
         }*/
 
-        Tablero tab = new Tablero();
-
         MulticastSocket socket = null;
         String name = "Registro";
         try {
@@ -35,7 +33,8 @@ public class Cliente {
             Registro comp = (Registro) registry.lookup(name);
             String nombreJugador = "Rodrigo";
             String datosRegistro = comp.registro(nombreJugador);
-            System.out.println(datosRegistro);
+
+            Tablero tab = new Tablero(nombreJugador);
 
             //Se registra el jugador en el sevidor Multicast UDP
             InetAddress group = InetAddress.getByName("228.5.6.7"); // destination multicast group

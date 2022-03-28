@@ -90,7 +90,7 @@ public class Tablero extends JFrame{
         tiempo.start();
     }
 
-    public Tablero() {
+    public Tablero(String nombreJugador) {
         this.setContentPane(this.panel1);
         this.setTitle("Tablero");
         this.setSize(700,800);
@@ -102,7 +102,7 @@ public class Tablero extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(button1.getIcon() != null){
                     try {
-                        mensajeTCP("9");
+                        mensajeTCP(nombreJugador);
                     } catch (RemoteException ex) {
                         ex.printStackTrace();
                     }
@@ -114,7 +114,7 @@ public class Tablero extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(button2.getIcon() != null){
                     try {
-                        mensajeTCP("9");
+                        mensajeTCP(nombreJugador);
                     } catch (RemoteException ex) {
                         ex.printStackTrace();
                     }
@@ -126,7 +126,7 @@ public class Tablero extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(button3.getIcon() != null){
                     try {
-                        mensajeTCP("9");
+                        mensajeTCP(nombreJugador);
                     } catch (RemoteException ex) {
                         ex.printStackTrace();
                     }
@@ -138,7 +138,7 @@ public class Tablero extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(button4.getIcon() != null){
                     try {
-                        mensajeTCP("9");
+                        mensajeTCP(nombreJugador);
                     } catch (RemoteException ex) {
                         ex.printStackTrace();
                     }
@@ -150,7 +150,7 @@ public class Tablero extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(button5.getIcon() != null){
                     try {
-                        mensajeTCP("9");
+                        mensajeTCP(nombreJugador);
                     } catch (RemoteException ex) {
                         ex.printStackTrace();
                     }
@@ -162,7 +162,7 @@ public class Tablero extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(button6.getIcon() != null){
                     try {
-                        mensajeTCP("9");
+                        mensajeTCP(nombreJugador);
                     } catch (RemoteException ex) {
                         ex.printStackTrace();
                     }
@@ -174,7 +174,7 @@ public class Tablero extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(button7.getIcon() != null){
                     try {
-                        mensajeTCP("9");
+                        mensajeTCP(nombreJugador);
                     } catch (RemoteException ex) {
                         ex.printStackTrace();
                     }
@@ -186,7 +186,7 @@ public class Tablero extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(button8.getIcon() != null){
                     try {
-                        mensajeTCP("9");
+                        mensajeTCP(nombreJugador);
                     } catch (RemoteException ex) {
                         ex.printStackTrace();
                     }
@@ -198,7 +198,7 @@ public class Tablero extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 if(button9.getIcon() != null){
                     try {
-                        mensajeTCP("9");
+                        mensajeTCP(nombreJugador);
                     } catch (RemoteException ex) {
                         ex.printStackTrace();
                     }
@@ -213,7 +213,6 @@ public class Tablero extends JFrame{
             int serverPort = 49152;
             socket = new Socket("localhost", serverPort);
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-            System.out.println("Recibí por RMI: " + mensaje);
 
             byte[] data = mensaje.getBytes();
             out.writeInt(data.length);
