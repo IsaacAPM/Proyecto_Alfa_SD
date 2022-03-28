@@ -20,7 +20,7 @@ public class Servidor implements Registro {
     public static ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
     private static int playersCounter = 0;
     public static int N;
-    public static boolean band = true;
+    public static boolean termino = false;
     private static MulticastSocket socket = null;
     private static ServerSocket listenSocket = null;
     private static InetAddress group;
@@ -68,7 +68,7 @@ public class Servidor implements Registro {
     }
 
     public void loopJuego() throws InterruptedException {
-        while(band){
+        while(!termino){
             Thread.sleep(1000);
             int posMonstruo = 0;
             posMonstruo = randomNumber(9,1);
@@ -77,13 +77,10 @@ public class Servidor implements Registro {
             enviaMensajeUDP(mensaje);
 
             try {
-                while (true) {
-                    System.out.println("Waiting for messages...");
-                    Socket clientSocket = this.listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
-                    Connection c = new Connection(clientSocket);
-                    c.start();
-                }
-
+                System.out.println("Waiting for messages...");
+                Socket clientSocket = this.listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
+                Connection c = new Connection(clientSocket);
+                c.start();
             } catch (IOException e) {
                 System.out.println("Listen :" + e.getMessage());
             }
@@ -138,14 +135,12 @@ public class Servidor implements Registro {
 
 class Connection extends Thread {
     private DataInputStream in;
-    private DataOutputStream out;
     private Socket clientSocket;
 
     public Connection(Socket aClientSocket) {
         try {
             clientSocket = aClientSocket;
             in = new DataInputStream(clientSocket.getInputStream());
-            out = new DataOutputStream(clientSocket.getOutputStream());
         } catch (IOException e) {
             System.out.println("Connection:" + e.getMessage());
         }
@@ -155,24 +150,28 @@ class Connection extends Thread {
     public void run() {
         try {
             // an echo server
-            String nombreUsuario = in.readUTF();         // recibo solicitud
+            int length = in.readInt();
+            byte[] array = new byte[length];
+            in.readFully(array);
+            String nombreUsuario = new String(array);
+            System.out.println(nombreUsuario);
             int i = 0;
             boolean band = false;
 
             while(i<Servidor.jugadores.size() && !band){
                 band = Servidor.jugadores.get(i).getId().equals(nombreUsuario);
+                System.out.println(band);
                 i++;
             }
 
             if(band){
-                Servidor.band = Servidor.jugadores.get(i-1).incWinCount();
-                if(Servidor.band){
+                Servidor.termino = Servidor.jugadores.get(i-1).incWinCount();
+                if(Servidor.termino){
                     Servidor.ganador = Servidor.jugadores.get(i-1);
                 }
             }
         } catch (EOFException e) {
-
-            //System.out.println("EOF:" + e.getMessage());
+            System.out.println("EOF:" + e.getMessage());
         } catch (IOException e) {
             System.out.println("IO:" + e.getMessage());
         } finally {
