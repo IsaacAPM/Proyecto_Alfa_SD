@@ -49,14 +49,10 @@ public class Cliente {
             String[] mensaje = new String(messageIn.getData()).trim().split(";");
             int posMonstruo = Integer.parseInt(mensaje[0]);
             String nomGanador = mensaje[1];
-            System.out.println(posMonstruo);
-            if (posMonstruo == 0){
-                if (nomGanador.equals(nombreJugador)){
-                    tab.muestra(posMonstruo,true);
-                }else{
-                    tab.muestra(posMonstruo,false);
-                }
-            }else {
+
+            if (nomGanador.equals(nombreJugador)){
+                tab.muestra(posMonstruo,true);
+            }else{
                 tab.muestra(posMonstruo,false);
             }
 

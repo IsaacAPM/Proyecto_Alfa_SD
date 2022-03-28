@@ -58,7 +58,7 @@ public class Servidor implements Registro {
         while(true){
             int posMonstruo = 0;
             posMonstruo = randomNumber(9,1);
-            String mensaje = posMonstruo + "; ";
+            String mensaje = "5;null";
             enviaMensajeUDP(mensaje);
         }
     }

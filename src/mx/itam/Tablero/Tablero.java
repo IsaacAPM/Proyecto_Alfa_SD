@@ -1,10 +1,14 @@
 package mx.itam.Tablero;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Random;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 
 public class Tablero extends JFrame{
     private JPanel panel1;
@@ -33,7 +37,9 @@ public class Tablero extends JFrame{
     }
 
     public void muestra(int posMonstruo, boolean ganador){
-        new ActionListener() {
+        System.out.println(posMonstruo);
+        Timer tiempo;
+        tiempo = new Timer(0,new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                     switch (posMonstruo){
@@ -80,7 +86,8 @@ public class Tablero extends JFrame{
                             break;
                     }
                 }
-        };
+        });
+        tiempo.start();
     }
 
     public Tablero() {
@@ -94,8 +101,11 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button1.getIcon() != null){
-                    i++;
-                    System.out.println("Le diste: "+i);
+                    try {
+                        mensajeTCP("9");
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -103,8 +113,11 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button2.getIcon() != null){
-                    i++;
-                    System.out.println("Le diste: "+i);
+                    try {
+                        mensajeTCP("9");
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -112,8 +125,11 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button3.getIcon() != null){
-                    i++;
-                    System.out.println("Le diste: "+i);
+                    try {
+                        mensajeTCP("9");
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -121,8 +137,11 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button4.getIcon() != null){
-                    i++;
-                    System.out.println("Le diste: "+i);
+                    try {
+                        mensajeTCP("9");
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -130,8 +149,11 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button5.getIcon() != null){
-                    i++;
-                    System.out.println("Le diste: "+i);
+                    try {
+                        mensajeTCP("9");
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -139,8 +161,11 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button6.getIcon() != null){
-                    i++;
-                    System.out.println("Le diste: "+i);
+                    try {
+                        mensajeTCP("9");
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -148,8 +173,11 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button7.getIcon() != null){
-                    i++;
-                    System.out.println("Le diste: "+i);
+                    try {
+                        mensajeTCP("9");
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -157,8 +185,11 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button8.getIcon() != null){
-                    i++;
-                    System.out.println("Le diste: "+i);
+                    try {
+                        mensajeTCP("9");
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -166,11 +197,41 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button9.getIcon() != null){
-                    i++;
-                    System.out.println("Le diste: "+i);
+                    try {
+                        mensajeTCP("9");
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
+    }
+
+    public void mensajeTCP(String mensaje) throws RemoteException {
+        Socket socket = null;
+        try {
+            int serverPort = 49152;
+            socket = new Socket("localhost", serverPort);
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            System.out.println("Recibí por RMI: " + mensaje);
+
+            byte[] data = mensaje.getBytes();
+            out.writeInt(data.length);
+            out.write(data);
+
+        } catch (UnknownHostException e) {
+            System.out.println("Sock:" + e.getMessage());
+        } catch (EOFException e) {
+            System.out.println("EOF:" + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("IO: -" + e.getMessage());
+        } finally {
+            if (socket != null) try {
+                socket.close();
+            } catch (IOException e) {
+                System.out.println("close:" + e.getMessage());
+            }
+        }
     }
 
     private void createUIComponents() {
