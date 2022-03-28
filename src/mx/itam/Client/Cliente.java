@@ -2,15 +2,12 @@ package mx.itam.Client;
 
 import mx.itam.Interfaces.Registro;
 import mx.itam.Tablero.Tablero;
-
-import javax.swing.*;
 import java.io.IOException;
 import java.net.*;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -47,13 +44,16 @@ public class Cliente {
             InetAddress group = InetAddress.getByName(inetA); // destination multicast group
             socketUDP = new MulticastSocket(portUDP);
             socketUDP.joinGroup(group);
+            System.out.println("pasa");
             byte[] buffer = new byte[1000];
             DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
             socketUDP.receive(messageIn);
+            System.out.println(messageIn.getData());
 
             String[] mensaje = new String(messageIn.getData()).trim().split(";");
             int posMonstruo = Integer.parseInt(mensaje[0]);
             String nomGanador = mensaje[1];
+            System.out.println(posMonstruo);
 
             if (nomGanador.equals(nombreJugador)){
                 tab.muestra(posMonstruo,true);
