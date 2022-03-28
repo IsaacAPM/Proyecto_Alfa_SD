@@ -30,20 +30,21 @@ public class Cliente {
         Socket socketTCP = null;
         String name = "Registro";
         try {
-            Registry registry = LocateRegistry.getRegistry("192.168.1.89");
+            Registry registry = LocateRegistry.getRegistry("localhost");
             Registro comp = (Registro) registry.lookup(name);
             String nombreJugador = "Rodrigo";
             String[] datosRegistro = comp.registro(nombreJugador).split(";");
             String IP = datosRegistro[0];
             int portTCP = Integer.parseInt(datosRegistro[1]);
             int portUDP = Integer.parseInt(datosRegistro[2]);
+            String inetA = datosRegistro[3];
 
             //Se agrega el jugador al Socket para comunicación TCP y se crea el Tablero
             socketTCP = new Socket(IP, portTCP);
             Tablero tab = new Tablero(nombreJugador, socketTCP);
 
             //Se registra el jugador en el sevidor Multicast UDP
-            InetAddress group = InetAddress.getByName(IP); // destination multicast group
+            InetAddress group = InetAddress.getByName(inetA); // destination multicast group
             socketUDP = new MulticastSocket(portUDP);
             socketUDP.joinGroup(group);
             byte[] buffer = new byte[1000];
