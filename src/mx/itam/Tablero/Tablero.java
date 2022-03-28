@@ -33,17 +33,11 @@ public class Tablero extends JFrame{
         button9.setIcon(null);
     }
 
-    public void muestra(){
-
-        Timer tiempo;
-        Random rand;
-        rand = new Random();
-        tiempo = new Timer(500, new ActionListener() {
+    public void muestra(int posMonstruo){
+        new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int x = 0;
-                    x = rand.nextInt(9) + 1;
-                    switch (x){
+                    switch (posMonstruo){
                         case 1:
                             limpiar();
                             button1.setIcon(img);
@@ -82,13 +76,15 @@ public class Tablero extends JFrame{
                             break;
                     }
                 }
-        });
-        tiempo.start();
-
+        };
     }
 
     public Tablero() {
-
+        this.setContentPane(this.panel1);
+        this.setTitle("Tablero");
+        this.setSize(700,800);
+        this.setVisible(true);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         button1.addActionListener(new ActionListener() {
             @Override
@@ -212,15 +208,4 @@ public class Tablero extends JFrame{
     private void createUIComponents() {
         // TODO: place custom component creation code here
     }
-
-    public static void main(String[] args) {
-        Tablero tab = new Tablero();
-        tab.setContentPane(tab.panel1);
-        tab.setTitle("Tablero");
-        tab.setSize(700,800);
-        tab.setVisible(true);
-        tab.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        tab.muestra();
-    }
-
 }

@@ -42,14 +42,13 @@ public class Servidor implements Registro {
             registry.rebind(name, stub);
             System.out.println("Servicio de registro desplegado\n");
 
-            String currentDate = (new Date()).toString();
-            String mensaje = currentDate + ";0;Este es un mensaje de prueba";
-
             this.group = InetAddress.getByName("228.5.6.7"); // destination multicast group
             this.socket = new MulticastSocket(49159);
             this.socket.joinGroup(this.group);
 
             loopJuego();
+
+            if (socket != null) socket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,6 +57,7 @@ public class Servidor implements Registro {
     public void loopJuego(){
         while(true){
             int posMonstruo = 0;
+            posMonstruo = ramdomNumber(9,1);
             String mensaje = posMonstruo + ";";
             enviaMensajeUDP(mensaje);
         }
@@ -69,11 +69,8 @@ public class Servidor implements Registro {
             DatagramPacket messageOut =
                     new DatagramPacket(m, m.length, this.group, 49159);
             this.socket.send(messageOut);
-            Thread.sleep(2000);
-        } catch (InterruptedException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (socket != null) socket.close();
         }
     }
 
