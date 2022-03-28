@@ -56,15 +56,13 @@ public class Servidor implements Registro {
 
             this.listenSocket = new ServerSocket(49200);
 
-            boolean vacio = true;
-            while (vacio){
-                if (this.jugadores.size() != 0) vacio = false;
-                System.out.println(this.jugadores.size());
+            while (this.jugadores.size() == 0) {
+                wait();
             }
             loopJuego();
 
             if (socket != null) socket.close();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -124,7 +122,7 @@ public class Servidor implements Registro {
     private int randomNumber(int max, int min){
         Random random = new Random();
 
-        int value = random.nextInt(max + min) + min;
+        int value = random.nextInt(max - min) + min;
         return  value;
     }
 
