@@ -59,12 +59,15 @@ public class Servidor implements Registro {
             boolean vacio = true;
             while (vacio){
                 if (this.jugadores.size() != 0) vacio = false;
-                System.out.println(this.jugadores.size());
+                Thread.sleep(1000);
+                //System.out.println(this.jugadores.size());
             }
             loopJuego();
 
             if (socket != null) socket.close();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
