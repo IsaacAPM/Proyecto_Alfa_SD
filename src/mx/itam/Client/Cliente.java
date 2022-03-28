@@ -66,6 +66,8 @@ public class Cliente {
             System.out.println("Socket: " + e.getMessage());
         } catch (IOException e) {
             System.out.println("IO: " + e.getMessage());
+        }finally {
+            if (socketUDP != null) socketUDP.close();
         }
     }
 }

@@ -211,6 +211,7 @@ public class Tablero extends JFrame{
 
     public void mensajeTCP(String mensaje) throws RemoteException {
         try {
+            System.out.println(mensaje);
             DataOutputStream out = new DataOutputStream(this.socket.getOutputStream());
             byte[] data = mensaje.getBytes();
             out.writeInt(data.length);
