@@ -10,6 +10,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Random;
 
 public class Servidor implements Registro {
     private static ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
@@ -90,6 +91,13 @@ public class Servidor implements Registro {
 
         System.out.println(this.toString());
         return  resp;
+    }
+
+    private int ramdomNumber(int max, int min){
+        Random random = new Random();
+
+        int value = random.nextInt(max + min) + min;
+        return  value;
     }
 
     public String toString(){

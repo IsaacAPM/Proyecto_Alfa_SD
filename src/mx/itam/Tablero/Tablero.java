@@ -1,3 +1,5 @@
+package mx.itam.Tablero;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -16,7 +18,7 @@ public class Tablero extends JFrame{
     private JButton button8;
     private JButton button9;
 
-    Icon img = new ImageIcon("/Users/Plauchu/Documents/SistemasDistribuidos/Tablero/monstruo.png");
+    Icon img = new ImageIcon("src/mx/itam/Tablero/monstruo.png");
     int i = 0;
 
     public void limpiar(){
