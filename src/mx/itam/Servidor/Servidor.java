@@ -57,8 +57,8 @@ public class Servidor implements Registro {
     public void loopJuego(){
         while(true){
             int posMonstruo = 0;
-            posMonstruo = ramdomNumber(9,1);
-            String mensaje = posMonstruo + ";";
+            posMonstruo = randomNumber(9,1);
+            String mensaje = posMonstruo + "; ";
             enviaMensajeUDP(mensaje);
         }
     }
@@ -90,7 +90,7 @@ public class Servidor implements Registro {
         return  resp;
     }
 
-    private int ramdomNumber(int max, int min){
+    private int randomNumber(int max, int min){
         Random random = new Random();
 
         int value = random.nextInt(max + min) + min;
