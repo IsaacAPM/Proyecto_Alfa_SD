@@ -60,22 +60,12 @@ public class Cliente {
                 tab.muestra(posMonstruo,false);
             }
 
-            //El jugador se sale del servidor Multicast UDP
-            socketUDP.leaveGroup(group);
-
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         } catch (SocketException e) {
             System.out.println("Socket: " + e.getMessage());
         } catch (IOException e) {
             System.out.println("IO: " + e.getMessage());
-        } finally {
-            if (socketUDP != null) socketUDP.close();
-            if (socketTCP != null) try {
-                socketTCP.close();
-            } catch (IOException e) {
-                System.out.println("close:" + e.getMessage());
-            }
         }
     }
 }
