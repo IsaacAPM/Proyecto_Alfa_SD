@@ -85,20 +85,16 @@ public class Servidor implements Registro {
         while (!encuentraGanador){
             int posMonstruo = randomNumber(9,1);
             enviaMensajeUDP(posMonstruo + ";null");
+
+            clientSocket = this.listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
             while (!recibeTCP){
-                try {
-                    clientSocket = this.listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
-                    Connection c = new Connection(clientSocket);
-                    c.start();
-                    System.out.println(recibeTCP);
-                } catch (IOException e) {
-                    System.out.println("Listen :" + e.getMessage());
-                }
+                Connection c = new Connection(clientSocket);
+                c.start();
             }
         }
         enviaMensajeUDP("0;" + this.nomGanador);
         encuentraGanador = false;
-        Thread.sleep(10000);
+        Thread.sleep(1000);
     }
 
     @Override
@@ -142,7 +138,6 @@ public class Servidor implements Registro {
 class Connection extends Thread {
     private DataInputStream in;
     private Socket clientSocket;
-    private volatile boolean running = true;
 
     public Connection(Socket aClientSocket) {
         try {
@@ -155,41 +150,34 @@ class Connection extends Thread {
 
     @Override
     public void run() {
-        while (running) {
+        try {
+            int length = in.readInt();
+            byte[] array = new byte[length];
+            in.readFully(array);
+            String nombreUsuario = new String(array);
+            System.out.println(nombreUsuario);
+            int i = 0;
+            boolean encuentraJugador = false;
+
+            while (i < Servidor.jugadores.size() && !encuentraJugador) {
+                encuentraJugador = Servidor.jugadores.get(i).getId().equals(nombreUsuario);
+                i++;
+            }
+
+            if (encuentraJugador) {
+                Servidor.encuentraGanador = Servidor.jugadores.get(i - 1).incWinCount();
+                System.out.println("Puntos: " + Servidor.jugadores.get(i - 1).getWinCount());
+                Servidor.nomGanador = Servidor.jugadores.get(i - 1).getId();
+                Servidor.recibeTCP = true;
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
             try {
-                int length = in.readInt();
-                byte[] array = new byte[length];
-                in.readFully(array);
-                String nombreUsuario = new String(array);
-                System.out.println(nombreUsuario);
-                int i = 0;
-                boolean encuentraJugador = false;
-
-                while (i < Servidor.jugadores.size() && !encuentraJugador) {
-                    encuentraJugador = Servidor.jugadores.get(i).getId().equals(nombreUsuario);
-                    i++;
-                }
-
-                if (encuentraJugador) {
-                    Servidor.encuentraGanador = Servidor.jugadores.get(i - 1).incWinCount();
-                    System.out.println("Puntos: " + Servidor.jugadores.get(i - 1).getWinCount());
-                    Servidor.nomGanador = Servidor.jugadores.get(i - 1).getId();
-                    Servidor.recibeTCP = true;
-                    stopRunning();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            } finally {
-                try {
-                    clientSocket.close();
-                } catch (IOException e) {
-                    System.out.println(e);
-                }
+                clientSocket.close();
+            } catch (IOException e) {
+                System.out.println(e);
             }
         }
-    }
-
-    public void stopRunning() {
-        running = false;
     }
 }

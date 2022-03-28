@@ -38,31 +38,36 @@ public class Cliente {
             String inetA = datosRegistro[3];
             System.out.println(portUDP);
 
+            //Se agrega el jugador al Socket para comunicación TCP y se crea el Tablero
+            socketTCP = new Socket(IP, portTCP);
+            Tablero tab = new Tablero();
+            tab.conectar(nombreJugador, socketTCP);
+
             //Se registra el jugador en el sevidor Multicast UDP
             InetAddress group = InetAddress.getByName(inetA); // destination multicast group
             socketUDP = new MulticastSocket(portUDP);
             socketUDP.joinGroup(group);
-            byte[] buffer = new byte[1000];
-            DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
-            socketUDP.receive(messageIn);
-            System.out.println(messageIn.getData());
 
-            String[] mensaje = new String(messageIn.getData()).trim().split(";");
-            int posMonstruo = Integer.parseInt(mensaje[0]);
-            String nomGanador = mensaje[1];
+            //Espera los mensajes del servidor Multicast UDP y los envía al tablero
+            while(true) {
+                byte[] buffer = new byte[1000];
+                DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
+                socketUDP.receive(messageIn);
+                System.out.println(messageIn.getData());
 
-            //Se agrega el jugador al Socket para comunicación TCP y se crea el Tablero
-            socketTCP = new Socket(IP, portTCP);
-            Tablero tab = new Tablero(nombreJugador, socketTCP);
+                String[] mensaje = new String(messageIn.getData()).trim().split(";");
+                int posMonstruo = Integer.parseInt(mensaje[0]);
+                String nomGanador = mensaje[1];
 
-            //Se muestra el monstruo o el mensaje del ganador en el juego
-            if (nomGanador.equals(nombreJugador)){
-                tab.muestra(posMonstruo,true);
-            }else{
-                tab.muestra(posMonstruo,false);
+                //Se muestra el monstruo o el mensaje del ganador en el juego
+                if (nomGanador.equals(nombreJugador)) {
+                    tab.muestra(posMonstruo, true);
+                } else {
+                    tab.muestra(posMonstruo, false);
+                }
+                Thread.sleep(60000);
             }
-
-        } catch (RemoteException | NotBoundException e) {
+        } catch (RemoteException | NotBoundException | InterruptedException e) {
             e.printStackTrace();
         } catch (SocketException e) {
             System.out.println("Socket: " + e.getMessage());

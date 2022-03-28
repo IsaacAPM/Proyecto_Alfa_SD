@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 
 public class Tablero extends JFrame{
     private Socket socket = null;
+    private String nombreJugador;
     private JPanel panel1;
     private JButton button1;
     private JButton button2;
@@ -24,6 +25,11 @@ public class Tablero extends JFrame{
     private JButton button9;
 
     Icon img = new ImageIcon("src/mx/itam/Tablero/monstruo.png");
+
+    public void conectar(String nombreJugador, Socket socket){
+        this.socket = socket;
+        this.nombreJugador = nombreJugador;
+    }
 
     public void limpiar(){
         button1.setIcon(null);
@@ -91,8 +97,7 @@ public class Tablero extends JFrame{
         tiempo.start();
     }
 
-    public Tablero(String nombreJugador, Socket socket) {
-        this.socket = socket;
+    public Tablero() {
         this.setContentPane(this.panel1);
         this.setTitle("Tablero");
         this.setSize(700,800);
