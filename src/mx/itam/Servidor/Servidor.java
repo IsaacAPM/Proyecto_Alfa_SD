@@ -4,8 +4,6 @@ import mx.itam.Clases.Jugador;
 import mx.itam.Interfaces.Registro;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.*;
 import java.rmi.RemoteException;
@@ -13,7 +11,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Random;
 
 public class Servidor implements Registro {
@@ -93,6 +90,7 @@ public class Servidor implements Registro {
                     clientSocket = this.listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
                     Connection c = new Connection(clientSocket);
                     c.start();
+                    System.out.println(recibeTCP);
                 } catch (IOException e) {
                     System.out.println("Listen :" + e.getMessage());
                 }
@@ -144,6 +142,7 @@ public class Servidor implements Registro {
 class Connection extends Thread {
     private DataInputStream in;
     private Socket clientSocket;
+    private volatile boolean running = true;
 
     public Connection(Socket aClientSocket) {
         try {
@@ -156,34 +155,41 @@ class Connection extends Thread {
 
     @Override
     public void run() {
-        try {
-            int length = in.readInt();
-            byte[] array = new byte[length];
-            in.readFully(array);
-            String nombreUsuario = new String(array);
-            System.out.println(nombreUsuario);
-            int i = 0;
-            boolean encuentraJugador = false;
-
-            while(i<Servidor.jugadores.size() && !encuentraJugador){
-                encuentraJugador = Servidor.jugadores.get(i).getId().equals(nombreUsuario);
-                i++;
-            }
-
-            if(encuentraJugador){
-                Servidor.encuentraGanador = Servidor.jugadores.get(i-1).incWinCount();
-                System.out.println("Puntos: " + Servidor.jugadores.get(i-1).getWinCount());
-                Servidor.nomGanador = Servidor.jugadores.get(i-1).getId();
-                Servidor.recibeTCP = true;
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } finally {
+        while (running) {
             try {
-                clientSocket.close();
-            } catch (IOException e) {
-                System.out.println(e);
+                int length = in.readInt();
+                byte[] array = new byte[length];
+                in.readFully(array);
+                String nombreUsuario = new String(array);
+                System.out.println(nombreUsuario);
+                int i = 0;
+                boolean encuentraJugador = false;
+
+                while (i < Servidor.jugadores.size() && !encuentraJugador) {
+                    encuentraJugador = Servidor.jugadores.get(i).getId().equals(nombreUsuario);
+                    i++;
+                }
+
+                if (encuentraJugador) {
+                    Servidor.encuentraGanador = Servidor.jugadores.get(i - 1).incWinCount();
+                    System.out.println("Puntos: " + Servidor.jugadores.get(i - 1).getWinCount());
+                    Servidor.nomGanador = Servidor.jugadores.get(i - 1).getId();
+                    Servidor.recibeTCP = true;
+                    stopRunning();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } finally {
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                    System.out.println(e);
+                }
             }
         }
+    }
+
+    public void stopRunning() {
+        running = false;
     }
 }
