@@ -52,7 +52,7 @@ public class Servidor implements Registro {
             this.group = InetAddress.getByName("228.5.6.7"); // destination multicast group
             this.socket = new MulticastSocket(49159);
             this.socket.joinGroup(this.group);
-
+            //System.out.println("***-*-*-*-*-*-*-*--*-*");
             loopJuego();
 
             if (socket != null) socket.close();
@@ -69,8 +69,9 @@ public class Servidor implements Registro {
             enviaMensajeUDP(mensaje);
 
             try {
-                int serverPort = 49152;
+                int serverPort = 49200;
                 ServerSocket listenSocket = new ServerSocket(serverPort);
+                //System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-");
                 while (true) {
                     System.out.println("Waiting for messages...");
                     Socket clientSocket = listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
@@ -100,7 +101,7 @@ public class Servidor implements Registro {
     public String registro(String id) throws RemoteException{
         String IP = "192.168.1.89";
         this.playersCounter++;
-        int portTCP = 49152;
+        int portTCP = 49200;
         int portUDP = 49159;
         String resp = IP + ";" + portTCP + ";" + portUDP;
         Jugador aux = new Jugador(id,N);
