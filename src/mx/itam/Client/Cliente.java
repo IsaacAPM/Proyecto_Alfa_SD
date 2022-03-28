@@ -44,7 +44,6 @@ public class Cliente {
             InetAddress group = InetAddress.getByName(inetA); // destination multicast group
             socketUDP = new MulticastSocket(portUDP);
             socketUDP.joinGroup(group);
-            System.out.println("pasa");
             byte[] buffer = new byte[1000];
             DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
             socketUDP.receive(messageIn);

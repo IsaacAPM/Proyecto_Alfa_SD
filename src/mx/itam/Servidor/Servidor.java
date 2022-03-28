@@ -22,6 +22,7 @@ public class Servidor implements Registro {
     public static int N;
     public static boolean band = true;
     private static MulticastSocket socket = null;
+    private static ServerSocket listenSocket = null;
     private static InetAddress group;
     public static Jugador ganador;
 
@@ -53,12 +54,13 @@ public class Servidor implements Registro {
             this.socket = new MulticastSocket(49159);
             this.socket.joinGroup(this.group);
 
-            boolean hayJugadores = jugadores.size()!=0;
-            System.out.println("Esperando jugadores");
-            while (!hayJugadores){
-                hayJugadores = jugadores.size()!=0;
-            }
+            this.listenSocket = new ServerSocket(49200);
 
+            boolean vacio = true;
+            while (vacio){
+                if (this.jugadores.size() != 0) vacio = false;
+                System.out.println(this.jugadores.size());
+            }
             loopJuego();
 
             if (socket != null) socket.close();
@@ -76,11 +78,9 @@ public class Servidor implements Registro {
             enviaMensajeUDP(mensaje);
 
             try {
-                int serverPort = 49200;
-                ServerSocket listenSocket = new ServerSocket(serverPort);
                 while (true) {
                     System.out.println("Waiting for messages...");
-                    Socket clientSocket = listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
+                    Socket clientSocket = this.listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
                     Connection c = new Connection(clientSocket);
                     c.start();
                 }
@@ -122,7 +122,9 @@ public class Servidor implements Registro {
     }
 
     private int randomNumber(int max, int min){
-        int value = (int) (Math.random()*(max-min)) + min;
+        Random random = new Random();
+
+        int value = random.nextInt(max + min) + min;
         return  value;
     }
 
