@@ -54,6 +54,7 @@ public class Servidor implements Registro {
             this.socket.joinGroup(this.group);
 
             boolean hayJugadores = jugadores.size()!=0;
+            System.out.println("Esperando jugadores");
             while (!hayJugadores){
                 hayJugadores = jugadores.size()!=0;
             }
