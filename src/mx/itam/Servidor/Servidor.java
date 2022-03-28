@@ -60,6 +60,9 @@ public class Servidor implements Registro {
             this.socketUDP = new MulticastSocket(this.portUDP);
             this.socketUDP.joinGroup(this.group);
 
+            //Se instancia el Socket TCP
+            this.listenSocket = new ServerSocket(this.portTCP);
+
             //Espera a que haya al menos un jugador
             System.out.println("Esperando jugadores");
             while (jugadores.size()==0){
@@ -68,7 +71,7 @@ public class Servidor implements Registro {
 
             System.out.println("Jugador encontrado");
 
-            Thread.sleep(10000);
+            Thread.sleep(1000);
 
             System.out.println("Arranca el juego");
             //Arranca el juego
@@ -87,12 +90,9 @@ public class Servidor implements Registro {
             enviaMensajeUDP(posMonstruo + ";null");
             while (!recibeTCP){
                 try {
-                    ServerSocket listenSocket = new ServerSocket(this.portTCP);
-                    while (true) {
-                        clientSocket = listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
-                        Connection c = new Connection(clientSocket);
-                        c.start();
-                    }
+                    clientSocket = this.listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
+                    Connection c = new Connection(clientSocket);
+                    c.start();
                 } catch (IOException e) {
                     System.out.println("Listen :" + e.getMessage());
                 }
@@ -172,6 +172,7 @@ class Connection extends Thread {
 
             if(encuentraJugador){
                 Servidor.encuentraGanador = Servidor.jugadores.get(i-1).incWinCount();
+                System.out.println("Puntos: " + Servidor.jugadores.get(i-1).getWinCount());
                 Servidor.nomGanador = Servidor.jugadores.get(i-1).getId();
                 Servidor.recibeTCP = true;
             }
