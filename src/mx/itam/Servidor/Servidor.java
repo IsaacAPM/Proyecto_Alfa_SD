@@ -23,6 +23,7 @@ public class Servidor implements Registro {
     public static boolean band = true;
     private static MulticastSocket socket = null;
     private static InetAddress group;
+    public static Jugador ganador;
 
     public Servidor() throws RemoteException{
         super();
@@ -31,6 +32,7 @@ public class Servidor implements Registro {
     public Servidor(int N){
         super();
         this.N = N;
+        ganador = new Jugador();
     }
 
     public void deploy(String name){
@@ -75,10 +77,12 @@ public class Servidor implements Registro {
                     Connection c = new Connection(clientSocket);
                     c.start();
                 }
+
             } catch (IOException e) {
                 System.out.println("Listen :" + e.getMessage());
             }
         }
+        enviaMensajeUDP(ganador.getId());
     }
 
     public void enviaMensajeUDP(String mensaje){
@@ -155,7 +159,11 @@ class Connection extends Thread {
 
             if(band){
                 Servidor.band = Servidor.jugadores.get(i-1).incWinCount();
-            }        } catch (EOFException e) {
+                if(Servidor.band){
+                    Servidor.ganador = Servidor.jugadores.get(i-1);
+                }
+            }
+        } catch (EOFException e) {
 
             //System.out.println("EOF:" + e.getMessage());
         } catch (IOException e) {

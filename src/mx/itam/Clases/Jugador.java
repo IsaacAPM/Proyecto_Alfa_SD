@@ -11,6 +11,10 @@ public class Jugador implements Comparable<Jugador>{
         this.winCount = 0;
     }
 
+    public  Jugador(){
+
+    }
+
     public boolean incWinCount(){
         /*Esta fución incrementa en 1 las victorias de este jugador
         * si ya alcanzó las victias para ganar regresa Treu, sino regresa False.
