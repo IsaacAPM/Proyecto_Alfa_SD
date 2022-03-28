@@ -98,11 +98,12 @@ public class Servidor implements Registro {
 
     @Override
     public String registro(String id) throws RemoteException{
-        String IP = "192.168.1.89";
         this.playersCounter++;
+        String IP = "192.168.1.89";
         int portTCP = 49152;
         int portUDP = 49159;
-        String resp = IP + ";" + portTCP + ";" + portUDP;
+        String inetA = "228.5.6.7";
+        String resp = IP + ";" + portTCP + ";" + portUDP + ";" + inetA;
         Jugador aux = new Jugador(id,N);
 
         if(!jugadores.contains(aux)){
