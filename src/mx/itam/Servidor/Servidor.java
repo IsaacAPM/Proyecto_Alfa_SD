@@ -53,6 +53,11 @@ public class Servidor implements Registro {
             this.socket = new MulticastSocket(49159);
             this.socket.joinGroup(this.group);
 
+            boolean hayJugadores = jugadores.size()!=0;
+            while (!hayJugadores){
+                hayJugadores = jugadores.size()!=0;
+            }
+
             loopJuego();
 
             if (socket != null) socket.close();
@@ -115,9 +120,7 @@ public class Servidor implements Registro {
     }
 
     private int randomNumber(int max, int min){
-        Random random = new Random();
-
-        int value = random.nextInt(max + min) + min;
+        int value = (int) (Math.random()*(max-min)) + min;
         return  value;
     }
 
