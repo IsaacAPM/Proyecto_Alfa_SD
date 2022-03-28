@@ -91,6 +91,7 @@ public class Servidor implements Registro {
                 Connection c = new Connection(clientSocket);
                 c.start();
             }
+            this.listenSocket = new ServerSocket(this.portTCP);
         }
         enviaMensajeUDP("0;" + this.nomGanador);
         encuentraGanador = false;
@@ -172,12 +173,6 @@ class Connection extends Thread {
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                clientSocket.close();
-            } catch (IOException e) {
-                System.out.println(e);
-            }
         }
     }
 }
