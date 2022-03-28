@@ -34,16 +34,10 @@ public class Tablero extends JFrame{
     }
 
     public void muestra(int posMonstruo){
-
-        Timer tiempo;
-        Random rand;
-        rand = new Random();
-        tiempo = new Timer(500, new ActionListener() {
+        new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int x = 0;
-                    x = rand.nextInt(9) + 1;
-                    switch (x){
+                    switch (posMonstruo){
                         case 1:
                             limpiar();
                             button1.setIcon(img);
@@ -82,9 +76,7 @@ public class Tablero extends JFrame{
                             break;
                     }
                 }
-        });
-        tiempo.start();
-
+        };
     }
 
     public Tablero() {
