@@ -40,7 +40,7 @@ public class Tablero extends JFrame{
     public void muestra(int posMonstruo, boolean ganador){
         System.out.println(posMonstruo);
         Timer tiempo;
-        tiempo = new Timer(0,new ActionListener() {
+        tiempo = new Timer(10,new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                     switch (posMonstruo){
@@ -212,11 +212,9 @@ public class Tablero extends JFrame{
     public void mensajeTCP(String mensaje) throws RemoteException {
         try {
             DataOutputStream out = new DataOutputStream(this.socket.getOutputStream());
-
             byte[] data = mensaje.getBytes();
             out.writeInt(data.length);
             out.write(data);
-
         } catch (UnknownHostException e) {
             System.out.println("Sock:" + e.getMessage());
         } catch (EOFException e) {

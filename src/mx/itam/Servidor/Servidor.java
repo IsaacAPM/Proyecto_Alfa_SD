@@ -64,8 +64,9 @@ public class Servidor implements Registro {
     public void loopJuego(){
         while(band){
             int posMonstruo = 0;
-            posMonstruo = randomNumber(10,1);
-            String mensaje = posMonstruo + "; ";
+            posMonstruo = randomNumber(9,1);
+            String mensaje = posMonstruo + ";null";
+            System.out.println(mensaje);
             enviaMensajeUDP(mensaje);
 
             try {
@@ -82,7 +83,7 @@ public class Servidor implements Registro {
                 System.out.println("Listen :" + e.getMessage());
             }
         }
-        enviaMensajeUDP(ganador.getId());
+        enviaMensajeUDP("0;" + ganador.getId());
     }
 
     public void enviaMensajeUDP(String mensaje){
@@ -99,7 +100,7 @@ public class Servidor implements Registro {
     @Override
     public String registro(String id) throws RemoteException{
         this.playersCounter++;
-        String IP = "192.168.1.89";
+        String IP = "localhost";
         int portTCP = 49200;
         int portUDP = 49159;
         String inetA = "228.5.6.7";
