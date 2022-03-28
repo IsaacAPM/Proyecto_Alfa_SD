@@ -54,14 +54,12 @@ public class Servidor implements Registro {
         }
     }
 
-    public boolean loopJuego(){
-        boolean finJuego = false;
-        while(!finJuego){
+    public void loopJuego(){
+        while(true){
             int posMonstruo = 0;
             String mensaje = posMonstruo + ";";
             enviaMensajeUDP(mensaje);
         }
-        return finJuego;
     }
 
     public void enviaMensajeUDP(String mensaje){
