@@ -27,7 +27,6 @@ public class Cliente {
         }*/
 
         Tablero tab = new Tablero();
-        tab.muestra();
 
         MulticastSocket socket = null;
         String name = "Registro";
@@ -46,7 +45,20 @@ public class Cliente {
             System.out.println("Waiting for messages...");
             DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
             socket.receive(messageIn);
-            System.out.println(new String(messageIn.getData()).trim());
+
+            String[] mensaje = new String(messageIn.getData()).trim().split(";");
+            int posMonstruo = Integer.parseInt(mensaje[0]);
+            String nomGanador = mensaje[1];
+            System.out.println(posMonstruo);
+            if (posMonstruo == 0){
+                if (nomGanador.equals(nombreJugador)){
+                    tab.muestra(posMonstruo,true);
+                }else{
+                    tab.muestra(posMonstruo,false);
+                }
+            }else {
+                tab.muestra(posMonstruo,false);
+            }
 
             //El jugador se sale del servidor Multicast UDP
             socket.leaveGroup(group);

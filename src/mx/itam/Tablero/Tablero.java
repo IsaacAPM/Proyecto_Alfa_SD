@@ -19,7 +19,6 @@ public class Tablero extends JFrame{
     private JButton button9;
 
     Icon img = new ImageIcon("src/mx/itam/Tablero/monstruo.png");
-    int i = 0;
 
     public void limpiar(){
         button1.setIcon(null);
@@ -33,7 +32,7 @@ public class Tablero extends JFrame{
         button9.setIcon(null);
     }
 
-    public void muestra(int posMonstruo){
+    public void muestra(int posMonstruo, boolean ganador){
         new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -70,9 +69,14 @@ public class Tablero extends JFrame{
                             limpiar();
                             button8.setIcon(img);
                             break;
-                        default:
+                        case 9:
                             limpiar();
                             button9.setIcon(img);
+                            break;
+                        default:
+                            limpiar();
+                            if (ganador) JOptionPane.showMessageDialog(null,"Ganaste");
+                            else JOptionPane.showMessageDialog(null,"Mejor suerte la próxima");
                             break;
                     }
                 }
@@ -89,10 +93,6 @@ public class Tablero extends JFrame{
         button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(i == 5){
-                    panel1.setVisible(false);
-                    JOptionPane.showMessageDialog(null,"Ganaste");
-                }
                 if(button1.getIcon() != null){
                     i++;
                     System.out.println("Le diste: "+i);
@@ -102,10 +102,6 @@ public class Tablero extends JFrame{
         button2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(i == 5){
-                    panel1.setVisible(false);
-                    JOptionPane.showMessageDialog(null,"Ganaste");
-                }
                 if(button2.getIcon() != null){
                     i++;
                     System.out.println("Le diste: "+i);
@@ -115,10 +111,6 @@ public class Tablero extends JFrame{
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(i == 5){
-                    panel1.setVisible(false);
-                    JOptionPane.showMessageDialog(null,"Ganaste");
-                }
                 if(button3.getIcon() != null){
                     i++;
                     System.out.println("Le diste: "+i);
@@ -128,10 +120,6 @@ public class Tablero extends JFrame{
         button4.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(i == 5){
-                    panel1.setVisible(false);
-                    JOptionPane.showMessageDialog(null,"Ganaste");
-                }
                 if(button4.getIcon() != null){
                     i++;
                     System.out.println("Le diste: "+i);
@@ -141,10 +129,6 @@ public class Tablero extends JFrame{
         button5.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(i == 5){
-                    panel1.setVisible(false);
-                    JOptionPane.showMessageDialog(null,"Ganaste");
-                }
                 if(button5.getIcon() != null){
                     i++;
                     System.out.println("Le diste: "+i);
@@ -154,10 +138,6 @@ public class Tablero extends JFrame{
         button6.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(i == 5){
-                    panel1.setVisible(false);
-                    JOptionPane.showMessageDialog(null,"Ganaste");
-                }
                 if(button6.getIcon() != null){
                     i++;
                     System.out.println("Le diste: "+i);
@@ -167,10 +147,6 @@ public class Tablero extends JFrame{
         button7.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(i == 5){
-                    panel1.setVisible(false);
-                    JOptionPane.showMessageDialog(null,"Ganaste");
-                }
                 if(button7.getIcon() != null){
                     i++;
                     System.out.println("Le diste: "+i);
@@ -180,10 +156,6 @@ public class Tablero extends JFrame{
         button8.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(i == 5){
-                    panel1.setVisible(false);
-                    JOptionPane.showMessageDialog(null,"Ganaste");
-                }
                 if(button8.getIcon() != null){
                     i++;
                     System.out.println("Le diste: "+i);
@@ -193,10 +165,6 @@ public class Tablero extends JFrame{
         button9.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(i == 5){
-                    panel1.setVisible(false);
-                    JOptionPane.showMessageDialog(null,"Ganaste");
-                }
                 if(button9.getIcon() != null){
                     i++;
                     System.out.println("Le diste: "+i);
