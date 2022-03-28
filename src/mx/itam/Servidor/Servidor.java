@@ -2,6 +2,10 @@ package mx.itam.Servidor;
 
 import mx.itam.Clases.Jugador;
 import mx.itam.Interfaces.Registro;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.*;
 import java.rmi.RemoteException;
@@ -13,9 +17,10 @@ import java.util.Date;
 import java.util.Random;
 
 public class Servidor implements Registro {
-    private static ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
+    public static ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
     private static int playersCounter = 0;
-    private static int N;
+    public static int N;
+    public static boolean band = true;
     private static MulticastSocket socket = null;
     private static InetAddress group;
 
@@ -55,11 +60,24 @@ public class Servidor implements Registro {
     }
 
     public void loopJuego(){
-        while(true){
+        while(band){
             int posMonstruo = 0;
-            posMonstruo = randomNumber(9,1);
+            posMonstruo = randomNumber(10,1);
             String mensaje = posMonstruo + "; ";
             enviaMensajeUDP(mensaje);
+
+            try {
+                int serverPort = 49152;
+                ServerSocket listenSocket = new ServerSocket(serverPort);
+                while (true) {
+                    System.out.println("Waiting for messages...");
+                    Socket clientSocket = listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
+                    Connection c = new Connection(clientSocket);
+                    c.start();
+                }
+            } catch (IOException e) {
+                System.out.println("Listen :" + e.getMessage());
+            }
         }
     }
 
@@ -78,8 +96,9 @@ public class Servidor implements Registro {
     public String registro(String id) throws RemoteException{
         String IP = "192.168.1.89";
         this.playersCounter++;
-        int port = 1099;
-        String resp = IP + ";" + port;
+        int portTCP = 49152;
+        int portUDP = 49159;
+        String resp = IP + ";" + portTCP + ";" + portUDP;
         Jugador aux = new Jugador(id,N);
 
         if(!jugadores.contains(aux)){
@@ -103,5 +122,50 @@ public class Servidor implements Registro {
             sb.append(jugador.toString());
         }
         return sb.toString();
+    }
+}
+
+class Connection extends Thread {
+    private DataInputStream in;
+    private DataOutputStream out;
+    private Socket clientSocket;
+
+    public Connection(Socket aClientSocket) {
+        try {
+            clientSocket = aClientSocket;
+            in = new DataInputStream(clientSocket.getInputStream());
+            out = new DataOutputStream(clientSocket.getOutputStream());
+        } catch (IOException e) {
+            System.out.println("Connection:" + e.getMessage());
+        }
+    }
+
+    @Override
+    public void run() {
+        try {
+            // an echo server
+            String nombreUsuario = in.readUTF();         // recibo solicitud
+            int i = 0;
+            boolean band = false;
+
+            while(i<Servidor.jugadores.size() && !band){
+                band = Servidor.jugadores.get(i).getId().equals(nombreUsuario);
+                i++;
+            }
+
+            if(band){
+                Servidor.band = Servidor.jugadores.get(i-1).incWinCount();
+            }        } catch (EOFException e) {
+
+            //System.out.println("EOF:" + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("IO:" + e.getMessage());
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+        }
     }
 }
