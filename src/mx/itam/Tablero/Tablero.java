@@ -33,7 +33,7 @@ public class Tablero extends JFrame{
         button9.setIcon(null);
     }
 
-    public void muestra(){
+    public void muestra(int posMonstruo){
 
         Timer tiempo;
         Random rand;
