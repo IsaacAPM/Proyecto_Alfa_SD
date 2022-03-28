@@ -69,7 +69,7 @@ public class Servidor implements Registro {
             enviaMensajeUDP(mensaje);
 
             try {
-                int serverPort = 49152;
+                int serverPort = 49200;
                 ServerSocket listenSocket = new ServerSocket(serverPort);
                 while (true) {
                     System.out.println("Waiting for messages...");
@@ -100,7 +100,7 @@ public class Servidor implements Registro {
     public String registro(String id) throws RemoteException{
         this.playersCounter++;
         String IP = "192.168.1.89";
-        int portTCP = 49152;
+        int portTCP = 49200;
         int portUDP = 49159;
         String inetA = "228.5.6.7";
         String resp = IP + ";" + portTCP + ";" + portUDP + ";" + inetA;
