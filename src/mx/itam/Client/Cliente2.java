@@ -2,17 +2,18 @@ package mx.itam.Client;
 
 import mx.itam.Interfaces.Registro;
 import mx.itam.Tablero.Tablero;
+
 import java.io.IOException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
-public class Cliente1 {
+public class Cliente2 {
     public static void main(String[] args){
         //RMI
         System.setProperty("java.security.policy", "src/mx/itam/Client/client.policy");
@@ -27,7 +28,7 @@ public class Cliente1 {
         try {
             Registry registry = LocateRegistry.getRegistry("localhost");
             Registro comp = (Registro) registry.lookup(name);
-            String nombreJugador = "Rodrigo";
+            String nombreJugador = "Isaac";
             String[] datosRegistro = comp.registro(nombreJugador).split(";");
 
             String IP = datosRegistro[0];
