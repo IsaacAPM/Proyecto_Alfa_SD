@@ -11,8 +11,9 @@ import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 
 public class Tablero extends JFrame{
-    private Socket socket = null;
-    private String nombreJugador;
+    private static int portTCP;
+    private static String nombreJugador;
+    private static String IP;
     private JPanel panel1;
     private JButton button1;
     private JButton button2;
@@ -26,9 +27,10 @@ public class Tablero extends JFrame{
 
     Icon img = new ImageIcon("src/mx/itam/Tablero/monstruo.png");
 
-    public void conectar(String nombreJugador, Socket socket){
-        this.socket = socket;
+    public void conectar(String nombreJugador, String IP, int portTCP){
+        this.portTCP = portTCP;
         this.nombreJugador = nombreJugador;
+        this.IP = IP;
     }
 
     public void limpiar(){
@@ -44,9 +46,8 @@ public class Tablero extends JFrame{
     }
 
     public void muestra(int posMonstruo, boolean ganador){
-        System.out.println(posMonstruo);
-        Timer tiempo;
-        tiempo = new Timer(10,new ActionListener() {
+        /*System.out.println(posMonstruo);*/
+        new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                     switch (posMonstruo){
@@ -93,8 +94,7 @@ public class Tablero extends JFrame{
                             break;
                     }
                 }
-        });
-        tiempo.start();
+        };
     }
 
     public Tablero() {
@@ -108,11 +108,7 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button1.getIcon() != null){
-                    try {
-                        mensajeTCP(nombreJugador);
-                    } catch (RemoteException ex) {
-                        ex.printStackTrace();
-                    }
+                    mensajeTCP(nombreJugador);
                 }
             }
         });
@@ -120,11 +116,7 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button2.getIcon() != null){
-                    try {
-                        mensajeTCP(nombreJugador);
-                    } catch (RemoteException ex) {
-                        ex.printStackTrace();
-                    }
+                    mensajeTCP(nombreJugador);
                 }
             }
         });
@@ -132,11 +124,7 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button3.getIcon() != null){
-                    try {
-                        mensajeTCP(nombreJugador);
-                    } catch (RemoteException ex) {
-                        ex.printStackTrace();
-                    }
+                    mensajeTCP(nombreJugador);
                 }
             }
         });
@@ -144,11 +132,7 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button4.getIcon() != null){
-                    try {
-                        mensajeTCP(nombreJugador);
-                    } catch (RemoteException ex) {
-                        ex.printStackTrace();
-                    }
+                    mensajeTCP(nombreJugador);
                 }
             }
         });
@@ -156,11 +140,7 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button5.getIcon() != null){
-                    try {
-                        mensajeTCP(nombreJugador);
-                    } catch (RemoteException ex) {
-                        ex.printStackTrace();
-                    }
+                    mensajeTCP(nombreJugador);
                 }
             }
         });
@@ -168,11 +148,7 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button6.getIcon() != null){
-                    try {
-                        mensajeTCP(nombreJugador);
-                    } catch (RemoteException ex) {
-                        ex.printStackTrace();
-                    }
+                    mensajeTCP(nombreJugador);
                 }
             }
         });
@@ -180,11 +156,7 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button7.getIcon() != null){
-                    try {
-                        mensajeTCP(nombreJugador);
-                    } catch (RemoteException ex) {
-                        ex.printStackTrace();
-                    }
+                    mensajeTCP(nombreJugador);
                 }
             }
         });
@@ -192,11 +164,7 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button8.getIcon() != null){
-                    try {
-                        mensajeTCP(nombreJugador);
-                    } catch (RemoteException ex) {
-                        ex.printStackTrace();
-                    }
+                    mensajeTCP(nombreJugador);
                 }
             }
         });
@@ -204,20 +172,18 @@ public class Tablero extends JFrame{
             @Override
             public void actionPerformed(ActionEvent e) {
                 if(button9.getIcon() != null){
-                    try {
-                        mensajeTCP(nombreJugador);
-                    } catch (RemoteException ex) {
-                        ex.printStackTrace();
-                    }
+                    mensajeTCP(nombreJugador);
                 }
             }
         });
     }
 
-    public void mensajeTCP(String mensaje) throws RemoteException {
+    public void mensajeTCP(String mensaje) {
+        Socket socket = null;
         try {
+            socket = new Socket(IP, portTCP);
             System.out.println(mensaje);
-            DataOutputStream out = new DataOutputStream(this.socket.getOutputStream());
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             byte[] data = mensaje.getBytes();
             out.writeInt(data.length);
             out.write(data);
@@ -227,6 +193,12 @@ public class Tablero extends JFrame{
             System.out.println("EOF:" + e.getMessage());
         } catch (IOException e) {
             System.out.println("IO: -" + e.getMessage());
+        } finally {
+            if (socket != null) try {
+                socket.close();
+            } catch (IOException e) {
+                System.out.println("close:" + e.getMessage());
+            }
         }
     }
 

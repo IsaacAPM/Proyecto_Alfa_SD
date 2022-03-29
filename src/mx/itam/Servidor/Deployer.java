@@ -16,7 +16,7 @@ public class Deployer {
         LocateRegistry.createRegistry(1099);
 
         String name= "Registro";
-        int N = 10;
+        int N = 5;
         Servidor servidor = new Servidor(N);
         servidor.deploy(name);
         //System.out.println("Hola");

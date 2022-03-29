@@ -16,18 +16,16 @@ import java.util.Random;
 public class Servidor implements Registro {
     public static ArrayList<Jugador> jugadores = new ArrayList<Jugador>();
     private static int playersCounter = 0;
+    private ServerSocket listenSocket;
     public static int N;
     public static boolean encuentraGanador = false;
-    public static boolean recibeTCP = false;
-    private static ServerSocket listenSocket = null;
+    public static boolean recibeTCP;
     private static MulticastSocket socketUDP = null;
-    private static Socket clientSocket = null;
     private static InetAddress group = null;
     public static String nomGanador;
-    private static String IP = "localhost";
-    private static int portTCP = 49200;
-    private static int portUDP = 49159;
-    private static String inetA = "228.5.6.7";
+    private static final int portTCP = 49200;
+    private static final int portUDP = 49159;
+    private static final String inetA = "228.5.6.7";
 
     public Servidor() throws RemoteException{
         super();
@@ -35,7 +33,7 @@ public class Servidor implements Registro {
 
     public Servidor(int N){
         super();
-        this.N = N;
+        Servidor.N = N;
     }
 
     public void deploy(String name){
@@ -53,12 +51,9 @@ public class Servidor implements Registro {
             System.out.println("Servicio de registro desplegado\n");
 
             //Se genera el servidor Multicast UDP
-            this.group = InetAddress.getByName(this.inetA); // destination multicast group
-            this.socketUDP = new MulticastSocket(this.portUDP);
-            this.socketUDP.joinGroup(this.group);
-
-            //Se instancia el Socket TCP
-            this.listenSocket = new ServerSocket(this.portTCP);
+            group = InetAddress.getByName(inetA); // destination multicast group
+            socketUDP = new MulticastSocket(portUDP);
+            socketUDP.joinGroup(group);
 
             //Espera a que haya al menos un jugador
             System.out.println("Esperando jugadores");
@@ -72,6 +67,7 @@ public class Servidor implements Registro {
 
             System.out.println("Arranca el juego");
             //Arranca el juego
+            listenSocket = new ServerSocket(portTCP);
             while(true) {
                 loopJuego();
             }
@@ -81,34 +77,46 @@ public class Servidor implements Registro {
         }
     }
 
-    public void loopJuego() throws InterruptedException, IOException {
-        while (!encuentraGanador){
-            int posMonstruo = randomNumber(9,1);
-            enviaMensajeUDP(posMonstruo + ";null");
+    public void loopJuego() {
+        try {
+            while (!encuentraGanador){
+                System.out.println("Envia UDP");
+                this.recibeTCP = false;
+                int posMonstruo = randomNumber(9,1);
+                enviaMensajeUDP(posMonstruo + ";null");
 
-            clientSocket = this.listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
-            while (!recibeTCP){
-                Connection c = new Connection(clientSocket);
-                c.start();
+                System.out.println("Genera TCP");
+                System.out.println(recibeTCP);
+
+                while (!recibeTCP){
+                    System.out.println("Escucho");
+                    Socket clientSocket = listenSocket.accept();  // Listens for a connection to be made to this socket and accepts it. The method blocks until a connection is made.
+                    System.out.println("Recibo TCP");
+                    Connection c = new Connection(clientSocket);
+                    c.start();
+                    Thread.sleep(1000);
+                    System.out.println(recibeTCP);
+                }
             }
-            this.listenSocket = new ServerSocket(this.portTCP);
+            enviaMensajeUDP("0;" + nomGanador);
+            encuentraGanador = false;
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
-        enviaMensajeUDP("0;" + this.nomGanador);
-        encuentraGanador = false;
-        Thread.sleep(1000);
     }
 
     @Override
     public String registro(String id) throws RemoteException{
-        this.playersCounter++;
-        String resp = this.IP + ";" + this.portTCP + ";" + this.portUDP + ";" + this.inetA;
+        playersCounter++;
+        String IP = "localhost";
+        String resp = IP + ";" + portTCP + ";" + portUDP + ";" + inetA;
         Jugador aux = new Jugador(id,N);
 
         if(!jugadores.contains(aux)){
            jugadores.add(aux);
         }
 
-        System.out.println(this.toString());
+        System.out.println(this);
         return  resp;
     }
 
@@ -119,17 +127,21 @@ public class Servidor implements Registro {
         return  value;
     }
 
-    private void enviaMensajeUDP(String mensaje) throws IOException {
-        System.out.println(mensaje);
-        byte[] m = mensaje.getBytes();
-        DatagramPacket messageOut =
-                new DatagramPacket(m, m.length, this.group, this.portUDP);
-        this.socketUDP.send(messageOut);
+    private void enviaMensajeUDP(String mensaje) {
+        try {
+            System.out.println(mensaje);
+            byte[] m = mensaje.getBytes();
+            DatagramPacket messageOut =
+                    new DatagramPacket(m, m.length, group, portUDP);
+            socketUDP.send(messageOut);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public String toString(){
         StringBuilder sb = new StringBuilder();
-        for(Jugador jugador : this.jugadores){
+        for(Jugador jugador : jugadores){
             sb.append(jugador.toString());
         }
         return sb.toString();
@@ -171,8 +183,17 @@ class Connection extends Thread {
                 Servidor.nomGanador = Servidor.jugadores.get(i - 1).getId();
                 Servidor.recibeTCP = true;
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (SocketException e) {
+            Servidor.recibeTCP = true;
+            System.out.println("Socket: " + e.getMessage());
+        } catch (IOException se){
+            se.printStackTrace();
+        } finally {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                System.out.println(e);
+            }
         }
     }
 }

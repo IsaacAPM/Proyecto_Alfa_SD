@@ -24,7 +24,6 @@ public class Cliente {
         }*/
 
         MulticastSocket socketUDP = null;
-        Socket socketTCP = null;
         String name = "Registro";
         try {
             Registry registry = LocateRegistry.getRegistry("localhost");
@@ -36,12 +35,10 @@ public class Cliente {
             int portTCP = Integer.parseInt(datosRegistro[1]);
             int portUDP = Integer.parseInt(datosRegistro[2]);
             String inetA = datosRegistro[3];
-            System.out.println(portUDP);
 
-            //Se agrega el jugador al Socket para comunicación TCP y se crea el Tablero
-            socketTCP = new Socket(IP, portTCP);
+            //Se crea el Tablero
             Tablero tab = new Tablero();
-            tab.conectar(nombreJugador, socketTCP);
+            tab.conectar(nombreJugador, IP, portTCP);
 
             //Se registra el jugador en el sevidor Multicast UDP
             InetAddress group = InetAddress.getByName(inetA); // destination multicast group
@@ -49,15 +46,14 @@ public class Cliente {
             socketUDP.joinGroup(group);
 
             //Espera los mensajes del servidor Multicast UDP y los envía al tablero
-            while(true) {
                 byte[] buffer = new byte[1000];
                 DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
                 socketUDP.receive(messageIn);
-                System.out.println(messageIn.getData());
 
                 String[] mensaje = new String(messageIn.getData()).trim().split(";");
                 int posMonstruo = Integer.parseInt(mensaje[0]);
                 String nomGanador = mensaje[1];
+                System.out.println(posMonstruo + nomGanador);
 
                 //Se muestra el monstruo o el mensaje del ganador en el juego
                 if (nomGanador.equals(nombreJugador)) {
@@ -65,10 +61,8 @@ public class Cliente {
                 } else {
                     tab.muestra(posMonstruo, false);
                 }
-                Thread.sleep(60000);
-            }
-        } catch (RemoteException | NotBoundException | InterruptedException e) {
-            e.printStackTrace();
+        } catch (RemoteException | NotBoundException e) {
+            System.out.println("Connect: " + e.getMessage());
         } catch (SocketException e) {
             System.out.println("Socket: " + e.getMessage());
         } catch (IOException e) {
