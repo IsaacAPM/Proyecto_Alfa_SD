@@ -3,7 +3,6 @@ package mx.itam.Client;
 import mx.itam.Interfaces.Registro;
 import mx.itam.Tablero.Tablero;
 import java.io.IOException;
-import java.net.*;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -13,7 +12,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 
-public class Cliente {
+public class Cliente1 {
     public static void main(String[] args){
         //RMI
         System.setProperty("java.security.policy", "src/mx/itam/Client/client.policy");
@@ -46,6 +45,7 @@ public class Cliente {
             socketUDP.joinGroup(group);
 
             //Espera los mensajes del servidor Multicast UDP y los envía al tablero
+            while(true) {
                 byte[] buffer = new byte[1000];
                 DatagramPacket messageIn = new DatagramPacket(buffer, buffer.length);
                 socketUDP.receive(messageIn);
@@ -61,6 +61,7 @@ public class Cliente {
                 } else {
                     tab.muestra(posMonstruo, false);
                 }
+            }
         } catch (RemoteException | NotBoundException e) {
             System.out.println("Connect: " + e.getMessage());
         } catch (SocketException e) {

@@ -99,6 +99,7 @@ public class Servidor implements Registro {
                 }
             }
             enviaMensajeUDP("0;" + nomGanador);
+            System.out.println("GANADOR: " + nomGanador);
             encuentraGanador = false;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

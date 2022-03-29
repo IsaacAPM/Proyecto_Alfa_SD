@@ -47,7 +47,8 @@ public class Tablero extends JFrame{
 
     public void muestra(int posMonstruo, boolean ganador){
         /*System.out.println(posMonstruo);*/
-        new ActionListener() {
+        Timer tiempo;
+        tiempo = new Timer(500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                     switch (posMonstruo){
@@ -94,7 +95,8 @@ public class Tablero extends JFrame{
                             break;
                     }
                 }
-        };
+        });
+        tiempo.start();
     }
 
     public Tablero() {
