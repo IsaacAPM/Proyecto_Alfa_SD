@@ -31,6 +31,10 @@ public class Jugador implements Comparable<Jugador>{
         return this.winCount;
     }
 
+    public void resetWinCount(){
+        this.winCount=0;
+    }
+
     public boolean equals(Jugador otroJugador){
         return this.id.equals(otroJugador.getId());
     }

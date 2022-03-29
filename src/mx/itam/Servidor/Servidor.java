@@ -100,6 +100,9 @@ public class Servidor implements Registro {
             }
             enviaMensajeUDP("0;" + nomGanador);
             System.out.println("GANADOR: " + nomGanador);
+            for(int i = 0; i < jugadores.size();i++){
+                jugadores.get(i).resetWinCount();
+            }
             encuentraGanador = false;
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
